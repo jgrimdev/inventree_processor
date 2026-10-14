@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: windows-latest
 
+    # PŘIDÁNO: Specifická oprávnění pro nahrávání do release
+    permissions:
+      contents: write
+
     steps:
       - name: Stazeni kodu
         uses: actions/checkout@v4
@@ -32,6 +36,7 @@ jobs:
       - name: Vydani (Release) na GitHubu
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/InvenTreeProcessor.exe
+          # Upravená cesta pro jistotu - hledá jakýkoli exe ve složce dist
+          files: dist/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
