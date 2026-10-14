@@ -1,0 +1,37 @@
+name: Vytvorit Windows EXE
+
+# Automat se spustí, když v GitHubu vydáš nový Tag (např. v1.1)
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Stazeni kodu
+        uses: actions/checkout@v4
+
+      - name: Instalace Pythonu
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalace knihoven
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Sestaveni EXE pro Windows
+        run: |
+          pyinstaller --noconsole --onefile --collect-all customtkinter --add-data "img;img" --icon="img/icon.ico" --name "InvenTreeProcessor" main.py
+
+      - name: Vydani (Release) na GitHubu
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/InvenTreeProcessor.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
